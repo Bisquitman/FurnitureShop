@@ -1,0 +1,19 @@
+// Цвета
+$mainColor: #3a3a3a;
+$orangeColor: #e89f71;
+$grayColor: #898989;
+$darkColor: #333;
+$darkGrayColor: #616161;
+$saleLabelColor: #E97171;
+$newLabelColor: #2EC1AC;
+
+// Шрифты
+
+// Breakpoints
+$minWidth: 320px;
+$maxWidth: 1440;
+$maxWidthContainer: 1240 + 15 * 2; // ширина 1240 + два паддинга по бокам по 15px = 1270
+$md1: $maxWidthContainer + 12;
+$md2: 991.98;
+$md3: 767.98;
+$md4: 479.98;

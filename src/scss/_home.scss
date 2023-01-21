@@ -1,0 +1,34 @@
+.page {
+  flex: 1 1 auto;
+
+  // .page__main-slider
+  &__main-slider {
+  }
+
+  // .page__advantages
+  &__advantages {
+  }
+
+  // .page__products
+  &__products {
+  }
+
+  // .page__rooms
+  &__rooms {
+  }
+
+  // .page__tips
+  &__tips {
+  }
+
+  // .page__furniture
+  &__furniture {
+  }
+}
+
+@import 'slides';
+@import 'advantages';
+@import 'products';
+@import 'rooms';
+@import 'tips';
+@import 'furniture';

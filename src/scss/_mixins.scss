@@ -1,0 +1,175 @@
+//* SCSS миксин для подключения шрифтов 
+@mixin font($font_name, $file_name, $weight, $style) {
+  @font-face {
+    font-family: $font_name;
+    font-display: swap;
+    src: url("../assets/fonts/#{$file_name}.woff") format("woff"),
+    url("../assets/fonts/#{$file_name}.woff2") format("woff2");
+    font-weight: #{$weight};
+    font-style: #{$style};
+  }
+}
+
+//* Адаптивный шрифт
+@mixin adaptive-font($pcSize, $mobSize, $maxSize) {
+  $addSize: $pcSize - $mobSize;
+
+  @if $maxSize==1 {
+    // Только если меньше контейнера
+    font-size: $pcSize + px;
+
+    @media(max-width: #{$maxWidthContainer + px}) {
+      font-size: calc(#{$mobSize + px} + #{$addSize} * ((100vw - 320px) / #{$maxWidthContainer - 320}));
+    }
+  }
+
+  @else if $maxSize==2 {
+    // Только если больше контейнера
+    font-size: $pcSize + px;
+
+    @media(min-width: #{$maxWidthContainer + px}) {
+      font-size: calc(#{$mobSize + px} + #{$addSize} * ((100vw - 320px) / #{$maxWidth - 320}));
+    }
+  }
+
+  @else {
+    // Всегда
+    font-size: calc(#{$mobSize + px} + #{$addSize} * ((100vw - 320px) / #{$maxWidth - 320}));
+  }
+}
+
+//* Адаптивное свойство
+@mixin adaptive-value($property, $startSize, $minSize, $type) {
+  $addSize: $startSize - $minSize;
+
+  @if $type==1 {
+    // Только если меньше контейнера
+    #{$property}: $startSize + px;
+
+    @media(max-width: #{$maxWidthContainer + px}) {
+      #{$property}: calc(#{$minSize + px} + #{$addSize} * ((100vw - 320px) / #{$maxWidthContainer - 320}));
+    }
+  }
+
+  @else if $type==2 {
+    // Только если больше контейнера
+    #{$property}: $startSize + px;
+
+    @media(min-width: #{$maxWidthContainer + px}) {
+      #{$property}: calc(#{$minSize + px} + #{$addSize} * ((100vw - 320px) / #{$maxWidth - 320}));
+    }
+  }
+
+  @else {
+    // Всегда
+    #{$property}: calc(#{$minSize + px} + #{$addSize} * ((100vw - 320px) / #{$maxWidth - 320}));
+  }
+}
+
+
+//! Автоматическое конвертирование px в rem
+$global-font-size: 100% !default;
+
+/*
+Removes the unit (e.g. px, em, rem) from a value, returning the number only.
+@param {Number} $num - Number to strip unit from.
+@returns {Number} The same number, sans unit.
+*/
+
+@function strip-unit($num) {
+  @return $num / ($num * 0 + 1);
+}
+
+/*
+Converts one or more pixel values into matching rem values.
+@param {Number|List} $values - One or more values to convert. Be sure to separate them with spaces and not commas. If you need to convert a comma-separated list, wrap the list in parentheses.
+
+@param {Number} $base [null] - The base value to use when calculating the `rem`. If you're using Foundation out of the box, this is 16px. If this parameter is `null`, the function will reference the `$base-font-size` variable as the base.
+
+@returns {List} A list of converted values.
+*/
+
+@function rem-calc($values, $base: null) {
+  $rem-values: ();
+  $count: length($values);
+
+  /* If no base is defined, defer to the global font size */
+  @if $base==null {
+    $base: $global-font-size;
+  }
+
+  /* If the base font size is a %, then multiply it by 16px
+This is because 100% font size = 16px in most all browsers
+*/
+  @if unit($base)=='%' {
+    $base: ($base / 100%) * 16px;
+  }
+
+  /* Using rem as base allows correct scaling */
+  @if unit($base)=='rem' {
+    $base: strip-unit($base) * 16px;
+  }
+
+  @if $count==1 {
+    @return -to-rem($values, $base);
+  }
+
+  @for $i from 1 through $count {
+    $rem-values: append($rem-values, -to-rem(nth($values, $i), $base));
+  }
+
+  @return $rem-values;
+}
+
+/*
+Converts a pixel value to matching rem value. *Any* value passed, regardless of unit, is assumed to be a pixel value. By default, the base pixel value used to calculate the rem value is taken from the `$global-font-size` variable.
+
+@access private
+@param {Number} $value - Pixel value to convert.
+@param {Number} $base [null] - Base for pixel conversion.
+
+@returns {Number} A number in rems, calculated based on the given value and the base pixel value. rem values are passed through as is.
+*/
+@function -to-rem($value, $base: null) {
+
+  /* Check if the value is a number */
+  @if type-of($value) !='number' {
+    @warn inspect($value)+' was passed to rem-calc(), which is not a number.';
+    @return $value;
+  }
+
+  /* Transform em into rem if someone hands over 'em's */
+  @if unit($value)=='em' {
+    $value: strip-unit($value) * 1rem;
+  }
+
+  /* Calculate rem if units for $value is not rem or em */
+  @if unit($value) !='rem' {
+    $value: strip-unit($value) / strip-unit($base) * 1rem;
+  }
+
+  /* Turn 0rem into 0 */
+  @if $value==0rem {
+    $value: 0;
+  }
+
+  @return $value;
+}
+
+//* Пример использования
+/*
+
+div.container {
+  margin: rem-calc(11 16 12 8); /* Numbers are the amount of margin you want in pixels 
+}
+
+*/
+//! ----------------------------------------------------//
+
+//! Медиа-запросы //
+//* min-width
+@mixin miw ($width) {
+  @media (min-width: $width) {
+    @content
+  }
+}
